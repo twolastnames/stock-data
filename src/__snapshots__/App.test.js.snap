@@ -1,0 +1,23 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders initial state 1`] = `
+<div>
+  <form>
+    <label>
+      Stock Symbol
+    </label>
+    <input
+      name="symbol"
+      type="text"
+    />
+    <input
+      onClick={[Function]}
+      type="button"
+      value="Submit"
+    />
+  </form>
+  <div
+    id="result-table"
+  />
+</div>
+`;
