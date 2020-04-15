@@ -12,7 +12,9 @@ print('echo "CREATE INDEX symbols_index ON symbols (name);" | $DB_ACCEPTOR')
 with open('data/companylist.csv') as csvfile:
   input = reader(csvfile)
   next(input) # dump headers
+  values = []
   for row in input:
-    sql = 'INSERT INTO symbols VALUES ("%s", "%s");' % (row[1], row[0])
-    print("echo '%s' | $DB_ACCEPTOR" % sql)
+    values.append('("%s", "%s")' % (row[1], row[0]))
+  sql = 'INSERT INTO symbols VALUES %s;' % (','.join(values))
+  print("echo '%s' | $DB_ACCEPTOR" % sql)
 
