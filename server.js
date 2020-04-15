@@ -42,4 +42,3 @@ app.get('/symbol/:like', async (req, res) => {
 })
 
 app.listen(process.env.PORT || 8080);
-
