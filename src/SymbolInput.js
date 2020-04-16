@@ -7,8 +7,8 @@ function getDisplayString({name, symbol}) {
 }
 
 function DataSet(props) {
-  const options = props.suggestions.map(text => {
-    return <option value={text} />
+  const options = props.suggestions.map((text, key) => {
+    return <option key={key} value={text} />
   })
   return (
     <datalist id="suggestions">
@@ -57,7 +57,7 @@ function SymbolInput(props) {
     
     document.querySelector('[name="symbol"]').value = ''
     lastValue = ''
-    props.symbolListener(match[2], match[1])
+    props.symbolListener(symbol, name)
   }
 
   setInterval(produceSymbol, 500)
