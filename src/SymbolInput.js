@@ -51,6 +51,9 @@ function SymbolInput(props) {
         inFlight = false;
       }
     }
+    if (!match) {
+      return;
+    }
     const symbol = match[2];
     const name = match[1];
 
