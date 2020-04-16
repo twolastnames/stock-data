@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDom from 'react-dom';
 import './App.css';
 import SymbolInput from './SymbolInput';
-import ResultTable from './ResultTable';
+import Result from './Result';
 
 function App() {
   const onSymbol = async (symbol, company) => {
@@ -11,7 +11,7 @@ function App() {
     );
     const marketData = await response.json();
     ReactDom.render(
-      <ResultTable company={company} symbol={symbol} marketData={marketData} />,
+      <Result company={company} symbol={symbol} marketData={marketData} />,
       document.getElementById('result-table')
     );
   };
