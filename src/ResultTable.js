@@ -54,9 +54,8 @@ function getDates(marketData) {
   const dateHeight = (1 - 0.9 * AxisPadding) * Height;
   return marketData.map((record, index) => {
     const x = getXLocation(index, marketData);
-    //const date = new Date(record.date);
     const [, month, day] = record.date.split('-');
-    const shortMonth = ShortMonths[parseInt(month)];
+    const shortMonth = ShortMonths[parseInt(month) - 1];
     return (
       <text key={index} x={x} y={dateHeight} className="date-text">
         {shortMonth} {parseInt(day).toString()}
