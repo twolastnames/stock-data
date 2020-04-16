@@ -160,9 +160,9 @@ function getCandles(marketData) {
 
 function ResultTable({ company, symbol, marketData }) {
   return (
-    <div>
-      <div className="company-name">{company}</div>
-      <div className="symbol">{symbol}</div>
+    <div className="result">
+      <h3 className="company-name">{company}</h3>
+      <h3 className="symbol">{symbol}</h3>
       <svg height={Height} width={Width}>
         <VerticalAxis />
         <HorizontalAxis />

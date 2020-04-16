@@ -2,9 +2,54 @@
 body {
   background-color: #282c34;
   color: white;
-  padding: 40px;
   font-family: Arial;
-  text-align: center;
+}
+
+.application {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: [top] 100px [center] 100px [bottom] auto;
+  justify-items: center;
+}
+
+h1 {
+  grid-row: top;
+}
+
+.company-searcher {
+  grid-row: center;
+}
+
+.result {
+  grid-row: bottom;
+  display: grid;
+  grid-template-columns: [left] 200px [rest] auto;
+  grid-template-rows: [top] 100px [bottom] auto;
+  justify-items: center;
+}
+
+.name-label {
+ margin: 10px;
+}
+
+.name-input {
+  margin: 10px;
+  width: 300px;
+}
+
+.company-name {
+  grid-column: rest;
+  grid-row: top;
+}
+
+.symbol {
+  grid-column: left;
+  grid-row: top;
+}
+
+svg {
+  grid-column: left / span 2;
+  grid-row: bottom;
 }
 
 .wick {
@@ -16,14 +61,12 @@ body {
   fill: red;
   stroke: white;
   stroke-width: 2;
-  fill-opacity: 1;
 }
 
 .bull-candle {
   fill: green;
   stroke: white;
   stroke-width: 2;
-  fill-opacity: 1;
 }
 
 .price-text {

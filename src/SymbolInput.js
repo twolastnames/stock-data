@@ -65,12 +65,18 @@ function SymbolInput(props) {
   setInterval(produceSymbol, 500);
 
   return (
-    <div>
+    <div className="company-searcher">
       <div id="suggestion-container">
         <datalist id="suggestions" />
       </div>
-      <label>Company Name</label>
-      <input type="text" list="suggestions" name="symbol" autoComplete="off" />
+      <label className="name-label">Company Name</label>
+      <input
+        className="name-input"
+        type="text"
+        list="suggestions"
+        name="symbol"
+        autoComplete="off"
+      />
     </div>
   );
 }

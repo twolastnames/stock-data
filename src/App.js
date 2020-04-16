@@ -7,7 +7,7 @@ import ResultTable from './ResultTable';
 function App() {
   const onSymbol = async (symbol, company) => {
     const response = await fetch(
-      `/v1/stock/${symbol}/chart/1m?period=annual&token=pk_766543c1514b4921b6736564fcfe93c8`
+      `/v1/stock/${symbol}/chart/1m?period=annual&token=pk_13a451e37e8b4da7bf4e93f7f6c4f40f`
     );
     const marketData = await response.json();
     ReactDom.render(
@@ -16,7 +16,8 @@ function App() {
     );
   };
   return (
-    <div>
+    <div className="application">
+      <h1>Monthly Stock Tracker</h1>
       <SymbolInput symbolListener={onSymbol} />
       <div id="result-table" />
     </div>
