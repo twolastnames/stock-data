@@ -4,6 +4,5 @@ import App from './App';
 
 test('renders initial state', () => {
   const tree = renderer.create(<App />).toJSON();
-  expect(tree).toMatchSnapshot()
+  expect(tree).toMatchSnapshot();
 });
-
