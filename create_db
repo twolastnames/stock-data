@@ -1,0 +1,4 @@
+#/bin/sh
+[ -e $DATABASE_FILE ] && rm data/application.sqlite
+node data/load_data.js
+

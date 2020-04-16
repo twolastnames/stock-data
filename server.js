@@ -2,26 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser')
 const path = require('path');
 const { createProxyMiddleware } = require('http-proxy-middleware');
-const Sequelize = require('sequelize')
-const Op = Sequelize.Op;
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: 'data/application.sqlite'
-});
-
-const Symbols = sequelize.define('symbols', {
-  name: {
-    type: Sequelize.STRING,
-    field: 'name',
-  },
-  symbol: {
-    type: Sequelize.STRING,
-    field: 'symbol',
-  }
-},{
-    timestamps: false
-  }
-)
+const { Symbols } = require('./data/Db')
+const { Op } = require('sequelize');
 
 const app = express();
 app.use(express.static(path.join(__dirname, 'build')));
