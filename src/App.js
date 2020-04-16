@@ -6,8 +6,10 @@ import ResultTable from './ResultTable'
 
 function App() {
 
-  const onSymbol = (symbol, company) => {
-    ReactDom.render(<ResultTable company={company} symbol={symbol}/>, document.getElementById('result-table'))
+  const onSymbol = async (symbol, company) => {
+    const response = await fetch(`/v1/stock/${symbol}/chart/3m?period=annual&token=pk_766543c1514b4921b6736564fcfe93c8`)
+    const marketData = await response.json()
+    ReactDom.render(<ResultTable company={company} symbol={symbol} marketData={marketData}/>, document.getElementById('result-table'))
   }
   return (
     <div>
