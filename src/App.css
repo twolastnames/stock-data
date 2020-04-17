@@ -8,24 +8,28 @@ body {
 .application {
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: [top] 100px [center] 100px [bottom] auto;
+  grid-template-rows: [header] 70px [body] auto;
   justify-items: center;
 }
 
 h1 {
-  grid-row: top;
-}
-
-.company-searcher {
-  grid-row: center;
+  grid-row: header;
 }
 
 .result {
-  grid-row: bottom;
+  grid-row: body;
   display: grid;
   grid-template-columns: [left] 200px [rest] auto;
-  grid-template-rows: [top] 100px [bottom] auto;
+  grid-template-rows: [top] 45px [padding] 40px [center] 60px [bottom] auto;
   justify-items: center;
+}
+
+.company-searcher {
+  grid-row: top;
+  grid-column: left / span 2;
+  border: 2px;
+  border-color: white;
+  border-style: solid;
 }
 
 .name-label {
@@ -39,12 +43,17 @@ h1 {
 
 .company-name {
   grid-column: rest;
-  grid-row: top;
+  grid-row: center;
 }
 
 .symbol {
   grid-column: left;
-  grid-row: top;
+  grid-row: center;
+}
+
+.message {
+  grid-row: center;
+  grid-column: left / span 2;
 }
 
 svg {
