@@ -1,18 +1,23 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`renders snapshot 1`] = `
-<form>
-  <label>
-    Stock Symbol
+exports[`renders blank state 1`] = `
+<div
+  className="company-searcher"
+>
+  <datalist
+    id="suggestions"
+  />
+  <label
+    className="name-label"
+  >
+    Company Name
   </label>
   <input
-    name="symbol"
+    autoComplete="off"
+    className="name-input"
+    list="suggestions"
+    onChange={[Function]}
     type="text"
   />
-  <input
-    onClick={[Function]}
-    type="button"
-    value="Submit"
-  />
-</form>
+</div>
 `;

@@ -17,21 +17,20 @@ class SymbolInput extends React.Component {
     if (this.inFlight) {
       return;
     }
-    const value = document.querySelector('[name="symbol"]').value.trim();
-    if (value === this.lastValue) {
+    if (this.inputText === this.lastValue) {
       return;
     }
-    this.lastValue = value;
-    if (value.length < 3) {
+    this.lastValue = this.inputText;
+    if (this.inputText.length < 3) {
       this.currentSuggestions = [];
       this.setState({ usableSuggestions: [] });
       return;
     }
-    const match = value.match(/^(.+) \((.+)\)$/);
-    if (!match || !this.state.usableSuggestions.includes(value)) {
+    const match = this.inputText.match(/^(.+) \((.+)\)$/);
+    if (!match || !this.state.usableSuggestions.includes(this.inputText)) {
       try {
         this.inFlight = true;
-        const response = await fetch(`/symbol/${value}`);
+        const response = await fetch(`/symbol/${this.inputText}`);
         const similarMatches = await response.json();
         this.setState(
           { usableSuggestions: similarMatches.map(getDisplayString) },
@@ -39,6 +38,8 @@ class SymbolInput extends React.Component {
         );
         return;
       } catch (e) {
+        const message = e.message ? e.message : 'no message given';
+        this.errorListener(`Error fetching symbol from server: ${message}`);
         this.inFlight = false;
       }
     }
@@ -48,8 +49,13 @@ class SymbolInput extends React.Component {
     const symbol = match[2];
     const name = match[1];
 
-    document.querySelector('[name="symbol"]').value = '';
+    this.inputText = '';
+    const input = document.querySelector('.name-input');
+    if (input) {
+      input.value = '';
+    }
     this.lastValue = '';
+    this.setState({ usableSuggestions: [] });
     this.symbolListener(symbol, name);
   }
 
@@ -58,10 +64,17 @@ class SymbolInput extends React.Component {
     this.inFlight = false;
     this.lastValue = '';
     this.currentSuggestions = [];
+    this.errorListener = props.errorListener;
     this.symbolListener = props.symbolListener;
+    this.inputText = '';
+    this.handleInput = this.handleInput.bind(this);
     this.state = {
       usableSuggestions: [],
     };
+  }
+
+  handleInput(event) {
+    this.inputText = event.target.value;
   }
 
   render() {
@@ -74,8 +87,8 @@ class SymbolInput extends React.Component {
           className="name-input"
           type="text"
           list="suggestions"
-          name="symbol"
           autoComplete="off"
+          onChange={this.handleInput}
         />
       </div>
     );

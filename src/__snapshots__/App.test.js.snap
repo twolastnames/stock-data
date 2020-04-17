@@ -1,23 +1,39 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`renders initial state 1`] = `
-<div>
-  <form>
-    <label>
-      Stock Symbol
-    </label>
-    <input
-      name="symbol"
-      type="text"
-    />
-    <input
-      onClick={[Function]}
-      type="button"
-      value="Submit"
-    />
-  </form>
+<div
+  className="application"
+>
+  <h1>
+    Monthly Stock Tracker
+  </h1>
   <div
-    id="result-table"
-  />
+    className="result"
+  >
+    <div
+      className="company-searcher"
+    >
+      <datalist
+        id="suggestions"
+      />
+      <label
+        className="name-label"
+      >
+        Company Name
+      </label>
+      <input
+        autoComplete="off"
+        className="name-input"
+        list="suggestions"
+        onChange={[Function]}
+        type="text"
+      />
+    </div>
+    <p
+      className="message"
+    >
+      Select a Company to See a Month of Stock History
+    </p>
+  </div>
 </div>
 `;
