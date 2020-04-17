@@ -1,54 +1,45 @@
 import React from 'react';
-import ReactDom from 'react-dom';
 import './App.css';
 
 function getDisplayString({ name, symbol }) {
   return `${name} (${symbol})`;
 }
 
-function DataSet(props) {
-  const options = props.suggestions.map((text, key) => {
+function getDataSet(suggestions) {
+  const options = suggestions.map((text, key) => {
     return <option key={key} value={text} />;
   });
   return <datalist id="suggestions">{options}</datalist>;
 }
 
-function SymbolInput(props) {
-  let currentSuggestions = [];
-  let lastValue = '';
-  let inFlight = false;
-  const produceSymbol = async () => {
-    if (inFlight) {
+class SymbolInput extends React.Component {
+  async checkForChange() {
+    if (this.inFlight) {
       return;
     }
     const value = document.querySelector('[name="symbol"]').value.trim();
-    if (value === lastValue) {
+    if (value === this.lastValue) {
       return;
     }
-    lastValue = value;
+    this.lastValue = value;
     if (value.length < 3) {
-      currentSuggestions = [];
-      ReactDom.render(
-        <DataSet suggestions={currentSuggestions} />,
-        document.getElementById('suggestion-container')
-      );
+      this.currentSuggestions = [];
+      this.setState({ usableSuggestions: [] });
       return;
     }
     const match = value.match(/^(.+) \((.+)\)$/);
-    if (!match || !currentSuggestions.includes(value)) {
+    if (!match || !this.state.usableSuggestions.includes(value)) {
       try {
-        inFlight = true;
+        this.inFlight = true;
         const response = await fetch(`/symbol/${value}`);
         const similarMatches = await response.json();
-        currentSuggestions = similarMatches.map(getDisplayString);
-        await ReactDom.render(
-          <DataSet suggestions={currentSuggestions} />,
-          document.getElementById('suggestion-container'),
-          () => (inFlight = false)
+        this.setState(
+          { usableSuggestions: similarMatches.map(getDisplayString) },
+          () => (this.inFlight = false)
         );
         return;
       } catch (e) {
-        inFlight = false;
+        this.inFlight = false;
       }
     }
     if (!match) {
@@ -58,27 +49,37 @@ function SymbolInput(props) {
     const name = match[1];
 
     document.querySelector('[name="symbol"]').value = '';
-    lastValue = '';
-    props.symbolListener(symbol, name);
-  };
+    this.lastValue = '';
+    this.symbolListener(symbol, name);
+  }
 
-  setInterval(produceSymbol, 500);
+  constructor(props) {
+    super(props);
+    this.inFlight = false;
+    this.lastValue = '';
+    this.currentSuggestions = [];
+    this.symbolListener = props.symbolListener;
+    this.state = {
+      usableSuggestions: [],
+    };
+  }
 
-  return (
-    <div className="company-searcher">
-      <div id="suggestion-container">
-        <datalist id="suggestions" />
+  render() {
+    setInterval(this.checkForChange.bind(this), 500);
+    return (
+      <div className="company-searcher">
+        {getDataSet(this.state.usableSuggestions)}
+        <label className="name-label">Company Name</label>
+        <input
+          className="name-input"
+          type="text"
+          list="suggestions"
+          name="symbol"
+          autoComplete="off"
+        />
       </div>
-      <label className="name-label">Company Name</label>
-      <input
-        className="name-input"
-        type="text"
-        list="suggestions"
-        name="symbol"
-        autoComplete="off"
-      />
-    </div>
-  );
+    );
+  }
 }
 
 export default SymbolInput;

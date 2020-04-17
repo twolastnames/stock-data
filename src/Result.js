@@ -1,4 +1,5 @@
 import React from 'react';
+import SymbolInput from './SymbolInput';
 
 const ShortMonths = [
   'Jan',
@@ -15,14 +16,7 @@ const ShortMonths = [
   'Dec',
 ];
 
-export class CandleChartHelper {
-  constructor(width, height, axisPadding, marketData) {
-    this.width = width;
-    this.height = height;
-    this.axisPadding = axisPadding;
-    this.marketData = marketData;
-  }
-
+class Result extends React.Component {
   getVerticalAxis() {
     return (
       <line
@@ -49,14 +43,15 @@ export class CandleChartHelper {
 
   getXLocation(index) {
     const spaceApart =
-      (this.width - this.axisPadding * this.width) / this.marketData.length;
+      (this.width - this.axisPadding * this.width) /
+      this.state.marketData.length;
     const baseLocation = this.width * this.axisPadding;
     return baseLocation + spaceApart * index + spaceApart * 0.5;
   }
 
   getDates() {
     const dateHeight = (1 - 0.9 * this.axisPadding) * this.height;
-    return this.marketData.map((record, index) => {
+    return this.state.marketData.map((record, index) => {
       const x = this.getXLocation(index);
       const [, month, day] = record.date.split('-');
       const shortMonth = ShortMonths[parseInt(month) - 1];
@@ -69,7 +64,7 @@ export class CandleChartHelper {
   }
 
   getEdgeValues() {
-    return this.marketData.reduce(
+    return this.state.marketData.reduce(
       (accumulator, { high, low }) => {
         if (high > accumulator.high) {
           accumulator.high = high;
@@ -113,13 +108,16 @@ export class CandleChartHelper {
 
   getWicks() {
     const wicks = [];
-    for (let index = 0; index < this.marketData.length; index++) {
-      const { open, close, low, high } = this.marketData[index];
+    for (let index = 0; index < this.state.marketData.length; index++) {
+      const { open, close, low, high } = this.state.marketData[index];
       const x = this.getXLocation(index);
       const keyBase = index * 2;
       {
         const y1 = this.getYForPrice(low);
-        const y2 = this.getYForPrice(Math.min(open, close), this.marketData);
+        const y2 = this.getYForPrice(
+          Math.min(open, close),
+          this.state.marketData
+        );
         wicks.push(
           <line key={keyBase} x1={x} x2={x} y1={y1} y2={y2} className="wick" />
         );
@@ -142,9 +140,17 @@ export class CandleChartHelper {
     return wicks;
   }
 
+  async onSymbol(symbol, company) {
+    const response = await fetch(
+      `/v1/stock/${symbol}/chart/1m?period=annual&token=pk_13a451e37e8b4da7bf4e93f7f6c4f40f`
+    );
+    const marketData = await response.json();
+    this.setState({ symbol, company, marketData });
+  }
+
   getCandles() {
     const candleWidth = 20;
-    return this.marketData.map(({ open, close }, index) => {
+    return this.state.marketData.map(({ open, close }, index) => {
       const y = this.getYForPrice(Math.max(open, close));
       const x = this.getXLocation(index) - candleWidth / 2;
       const height = Math.abs(open - close) * this.getPixelPerDollar();
@@ -161,27 +167,46 @@ export class CandleChartHelper {
       );
     });
   }
-}
 
-function Result({ company, symbol, marketData }) {
-  console.error({ marketData });
-  const height = 600;
-  const width = 900;
-  const chart = new CandleChartHelper(width, height, 0.1, marketData);
-  return (
-    <div className="result">
-      <h3 className="company-name">{company}</h3>
-      <h3 className="symbol">{symbol}</h3>
-      <svg height={height} width={width}>
-        {chart.getVerticalAxis()}
-        {chart.getHorizontalAxis()}
-        {chart.getDates(marketData)}
-        {chart.getPriceAxis(marketData)}
-        {chart.getCandles(marketData)}
-        {chart.getWicks(marketData)}
-      </svg>
-    </div>
-  );
+  constructor(props) {
+    super(props);
+    this.onSymbol = this.onSymbol.bind(this);
+    this.height = 600;
+    this.width = 900;
+    this.axisPadding = 0.1;
+    this.state = {
+      symbol: null,
+      company: null,
+      marketData: [],
+    };
+  }
+  render() {
+    if (!this.state.marketData || !this.state.marketData.length) {
+      return (
+        <div className="result">
+          <SymbolInput symbolListener={this.onSymbol} />
+          <p className="message">
+            Select a Company to See a Month of Stock History
+          </p>
+        </div>
+      );
+    }
+    return (
+      <div className="result">
+        <SymbolInput symbolListener={this.onSymbol} />
+        <h3 className="company-name">{this.state.company}</h3>
+        <h3 className="symbol">{this.state.symbol}</h3>
+        <svg height={this.height} width={this.width}>
+          {this.getVerticalAxis()}
+          {this.getHorizontalAxis()}
+          {this.getDates()}
+          {this.getPriceAxis()}
+          {this.getCandles()}
+          {this.getWicks()}
+        </svg>
+      </div>
+    );
+  }
 }
 
 export default Result;
