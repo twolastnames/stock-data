@@ -1,5 +1,6 @@
 import React from 'react';
 import SymbolInput from './SymbolInput';
+import Config from './config';
 
 const ShortMonths = [
   'Jan',
@@ -142,7 +143,7 @@ class Result extends React.Component {
 
   async onSymbol(symbol, company) {
     const response = await fetch(
-      `/v1/stock/${symbol}/chart/1m?period=annual&token=pk_13a451e37e8b4da7bf4e93f7f6c4f40f`
+      `/v1/stock/${symbol}/chart/1m?period=annual&token=${Config.apiKey}`
     );
     const marketData = await response.json();
     this.setState({ symbol, company, marketData });
