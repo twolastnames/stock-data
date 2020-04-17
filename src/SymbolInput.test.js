@@ -2,6 +2,10 @@ import React from 'react';
 import SymbolInput from './SymbolInput';
 import renderer from 'react-test-renderer';
 import { shallow } from 'enzyme';
+import { promisify } from 'util';
+
+const sleep = promisify(setTimeout);
+const nextTick = promisify(process.nextTick);
 
 jest.useFakeTimers();
 
@@ -10,11 +14,27 @@ test('renders blank state', () => {
   expect(tree).toMatchSnapshot();
 });
 
-describe('symbol completion', () => {
+describe('SymbolInput', () => {
   let wrapper = null;
   let symbolListener = null;
   let errorListener = null;
   beforeEach(() => {
+    jest.clearAllTimers();
+    fetchMock.mockIf(/.*/, async (req) => {
+      const url = req.url;
+      if (url === '/symbol/status500') {
+        return { status: 500 };
+      } else if (url === '/symbol/hang') {
+        await sleep(10000);
+        return {};
+      } else if (url === '/symbol/john') {
+        return {
+          body: JSON.stringify([{ name: 'John', symbol: 'Dough' }]),
+          status: 200,
+        };
+      }
+    });
+
     symbolListener = jest.fn();
     errorListener = jest.fn();
     wrapper = shallow(
@@ -23,66 +43,73 @@ describe('symbol completion', () => {
         errorListener={errorListener}
       />
     );
-    fetchMock.mockIf(/.*symbol\/john/, async () => {
-      return {
-        body: JSON.stringify([{ name: 'John', symbol: 'Dough' }]),
-      };
-    });
   });
 
-  it('suggests symbols', async (done) => {
+  it('suggests symbols', async () => {
     const input = await wrapper.find('.name-input');
     input.simulate('change', { target: { value: 'john' } });
     jest.advanceTimersByTime(900);
-    process.nextTick(() => {
-      expect(wrapper.state('usableSuggestions')).toEqual(['John (Dough)']);
-      expect(errorListener).toBeCalledTimes(0);
-      expect(symbolListener).toBeCalledTimes(0);
-      done();
-    });
+    await nextTick();
+    expect(wrapper.state('usableSuggestions')).toEqual(['John (Dough)']);
+    expect(errorListener).toBeCalledTimes(0);
+    expect(symbolListener).toBeCalledTimes(0);
   });
 
-  // TODO fix this test?
-  // It needs to be selected from a list because the same
-  // company can trade under multiple symbols
-  // jest is not acknowledging the second time advance
-  it.skip('calls back when a stock is selected', async (done) => {
+  it('calls back when a stock is selected', async () => {
     const input = await wrapper.find('.name-input');
-    input.simulate('change', { target: { value: 'John' } });
-    jest.advanceTimersByTime(900);
+    input.simulate('change', { target: { value: 'john' } });
+    jest.advanceTimersByTime(700);
+    await nextTick();
     input.simulate('change', { target: { value: 'John (Dough)' } });
-    jest.advanceTimersByTime(900);
-    process.nextTick(() => {
-      expect(symbolListener).toBeCalledWith('Dough', 'John');
-      done();
-    });
+    jest.advanceTimersByTime(700);
+    await nextTick();
+    expect(symbolListener).toBeCalledWith('Dough', 'John');
   });
 
-  it('specifies an error on fetch error with a message property', async (done) => {
+  it('specifies an error on fetch hangup', async () => {
+    fetch.mockAbort();
+    const input = await wrapper.find('.name-input');
+    input.simulate('change', { target: { value: 'john' } });
+    jest.advanceTimersByTime(900);
+    await nextTick();
+    expect(errorListener).toBeCalledWith(
+      'Error fetching symbol from server: The operation was aborted. '
+    );
+    expect(symbolListener).toBeCalledTimes(0);
+  });
+
+  it('specifies an error on fetch error with a message property', async () => {
     fetch.mockReject(new Error('my error message'));
     const input = await wrapper.find('.name-input');
     input.simulate('change', { target: { value: 'john' } });
     jest.advanceTimersByTime(900);
-    process.nextTick(() => {
-      expect(errorListener).toBeCalledWith(
-        'Error fetching symbol from server: my error message'
-      );
-      expect(symbolListener).toBeCalledTimes(0);
-      done();
-    });
+    await nextTick();
+    expect(errorListener).toBeCalledWith(
+      'Error fetching symbol from server: my error message'
+    );
+    expect(symbolListener).toBeCalledTimes(0);
   });
 
-  it('specifies an error on fetch error without a message property', async (done) => {
+  it('specifies an error on fetch error without a message property', async () => {
     fetch.mockReject('my error message');
     const input = await wrapper.find('.name-input');
     input.simulate('change', { target: { value: 'john' } });
     jest.advanceTimersByTime(900);
-    process.nextTick(() => {
-      expect(errorListener).toBeCalledWith(
-        'Error fetching symbol from server: no message given'
-      );
-      expect(symbolListener).toBeCalledTimes(0);
-      done();
-    });
+    await nextTick();
+    expect(errorListener).toBeCalledWith(
+      'Error fetching symbol from server: no message given'
+    );
+    expect(symbolListener).toBeCalledTimes(0);
+  });
+
+  it('specifies an error on non 200 status', async () => {
+    const input = await wrapper.find('.name-input');
+    input.simulate('change', { target: { value: 'status500' } });
+    jest.advanceTimersByTime(900);
+    await nextTick();
+    expect(errorListener).toBeCalledWith(
+      'recieved status 500 from server for path [/symbol/status500]'
+    );
+    expect(symbolListener).toBeCalledTimes(0);
   });
 });
