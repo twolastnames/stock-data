@@ -154,6 +154,7 @@ class CandlestickChart extends React.Component {
       const record = marketData[index];
       const errors = [];
       const keys = ['open', 'close', 'low', 'high'];
+
       keys.forEach((key) => {
         if ('number' !== typeof record[key]) {
           errors.push(key);
@@ -180,6 +181,28 @@ class CandlestickChart extends React.Component {
         )}`;
       }
       previousDate = newDate;
+      const { open, close, low, high } = record;
+      if (low > high) {
+        return `market data is inverted at positioned at ${index} in data: ${JSON.stringify(
+          marketData,
+          null,
+          2
+        )}`;
+      }
+      if (high < open || high < close) {
+        return `high is bound by open/close positioned at ${index} in data: ${JSON.stringify(
+          marketData,
+          null,
+          2
+        )}`;
+      }
+      if (low > open || low > close) {
+        return `low is bound by open/close positioned at ${index} in data: ${JSON.stringify(
+          marketData,
+          null,
+          2
+        )}`;
+      }
     }
   }
 

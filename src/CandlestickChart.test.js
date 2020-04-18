@@ -277,7 +277,7 @@ describe('the candlestick chart', () => {
       error:
         'invalid field(s) [low] in element positioned at 1 in data: RECORD_DATA',
       data: [
-        { open: 1, close: 3, low: 2, high: 4, date: '2020-10-05' },
+        { open: 2, close: 3, low: 2, high: 4, date: '2020-10-05' },
         { open: 1, close: 3, low: null, high: 4, date: '2020-10-05' },
       ],
     },
@@ -316,6 +316,33 @@ describe('the candlestick chart', () => {
         { open: 1, close: 3, low: 1, high: 4, date: '2020-02-02' },
         { open: 1, close: 3, low: 1, high: 4, date: '2020-02-01' },
         { open: 1, close: 3, low: 1, high: 4, date: '2020-02-03' },
+      ],
+    },
+    {
+      description: 'market data is inverted',
+      error: 'market data is inverted at positioned at 2 in data: RECORD_DATA',
+      data: [
+        { open: 1, close: 3, low: 1, high: 4, date: '2020-02-01' },
+        { open: 1, close: 3, low: 1, high: 4, date: '2020-02-02' },
+        { open: 1, close: 3, low: 4, high: 3, date: '2020-02-03' },
+      ],
+    },
+    {
+      description: 'when high is bound by open/close',
+      error: 'high is bound by open/close positioned at 1 in data: RECORD_DATA',
+      data: [
+        { open: 1, close: 3, low: 1, high: 4, date: '2020-02-01' },
+        { open: 1, close: 3, low: 1, high: 2, date: '2020-02-02' },
+        { open: 1, close: 3, low: 4, high: 3, date: '2020-02-03' },
+      ],
+    },
+    {
+      description: 'when low is bound by open/close',
+      error: 'low is bound by open/close positioned at 1 in data: RECORD_DATA',
+      data: [
+        { open: 1, close: 3, low: 1, high: 4, date: '2020-02-01' },
+        { open: 1, close: 3, low: 2, high: 4, date: '2020-02-02' },
+        { open: 1, close: 3, low: 4, high: 3, date: '2020-02-03' },
       ],
     },
     {
