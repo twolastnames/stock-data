@@ -1,5 +1,5 @@
 import React from 'react';
-import Result from './Result';
+import CandlestickChart from './CandlestickChart';
 import renderer from 'react-test-renderer';
 import { shallow } from 'enzyme';
 import { promisify } from 'util';
@@ -38,12 +38,12 @@ function getXLocation(data, index) {
 }
 
 test('rendering a blank component', () => {
-  const tree = renderer.create(<Result />).toJSON();
+  const tree = renderer.create(<CandlestickChart />).toJSON();
   expect(tree).toMatchSnapshot();
 });
 
 test('message', () => {
-  const wrapper = shallow(<Result />);
+  const wrapper = shallow(<CandlestickChart />);
   const message = wrapper.find('.message').text();
   expect(message).toEqual('Select a Company to See a Month of Stock History');
 });
@@ -53,8 +53,8 @@ describe('the candlestick chart', () => {
   let wrapper = null;
   let onSymbol = null;
   beforeEach(async () => {
-    wrapper = shallow(<Result />);
-    onSymbol = wrapper.instance.onSymbol;
+    wrapper = shallow(<CandlestickChart />);
+    onSymbol = wrapper.instance().onSymbol;
     const regExp = new RegExp(
       '^/v1/stock/[^\\/]+/chart/1m\\?period=annual&token=.+'
     );

@@ -17,7 +17,7 @@ const ShortMonths = [
   'Dec',
 ];
 
-class Result extends React.Component {
+class CandlestickChart extends React.Component {
   getVerticalAxis() {
     return (
       <line
@@ -268,4 +268,4 @@ class Result extends React.Component {
   }
 }
 
-export default Result;
+export default CandlestickChart;
