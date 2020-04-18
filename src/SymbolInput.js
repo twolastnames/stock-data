@@ -14,10 +14,7 @@ function getDataSet(suggestions) {
 
 class SymbolInput extends React.Component {
   async checkForChange() {
-    if (this.inFlight) {
-      return;
-    }
-    if (this.inputText === this.lastValue) {
+    if (this.inFlight || this.inputText === this.lastValue) {
       return;
     }
     this.lastValue = this.inputText;
