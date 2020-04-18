@@ -29,6 +29,12 @@ class SymbolInput extends React.Component {
         this.inFlight = true;
         const path = `/symbol/${this.inputText}`;
         const response = await fetch(path);
+        if (response.status === 404) {
+          this.errorListener(
+            `Can not find any company names starting with "${this.inputText}"`
+          );
+          return;
+        }
         if (response.status !== 200) {
           this.errorListener(
             `recieved status ${response.status} from server for path [${path}]`

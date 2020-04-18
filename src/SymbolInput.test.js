@@ -28,6 +28,8 @@ describe('SymbolInput', () => {
       const url = req.url;
       if (url === '/symbol/status500') {
         return { status: 500 };
+      } else if (url === '/symbol/status404') {
+        return { status: 404, body: [] };
       } else if (url === '/symbol/hang') {
         await sleep(10000);
         return {};
@@ -129,7 +131,18 @@ describe('SymbolInput', () => {
     expect(symbolListener).toBeCalledTimes(0);
   });
 
-  it('specifies an error on non 200 status', async () => {
+  it('specifies a friendly message for a 404 status', async () => {
+    const input = wrapper.find('.name-input');
+    input.simulate('change', { target: { value: 'status404' } });
+    jest.advanceTimersByTime(900);
+    await nextTick();
+    expect(errorListener).toBeCalledWith(
+      'Can not find any company names starting with "status404"'
+    );
+    expect(symbolListener).toBeCalledTimes(0);
+  });
+
+  it('specifies an error on non 200/404 status', async () => {
     const input = wrapper.find('.name-input');
     input.simulate('change', { target: { value: 'status500' } });
     jest.advanceTimersByTime(900);
