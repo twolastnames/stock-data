@@ -71,8 +71,8 @@ class SymbolInput extends React.Component {
     this.inFlight = false;
     this.lastValue = '';
     this.currentSuggestions = [];
-    this.errorListener = props.errorListener;
-    this.symbolListener = props.symbolListener;
+    this.errorListener = props.errorListener.bind(this);
+    this.symbolListener = props.symbolListener.bind(this);
     this.inputText = '';
     this.handleInput = this.handleInput.bind(this);
     this.state = {
