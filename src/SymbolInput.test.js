@@ -51,7 +51,7 @@ describe('SymbolInput', () => {
   });
 
   it('suggests symbols', async () => {
-    const input = await wrapper.find('.name-input');
+    const input = wrapper.find('.name-input');
     input.simulate('change', { target: { value: 'john' } });
     jest.advanceTimersByTime(900);
     await nextTick();
@@ -61,7 +61,7 @@ describe('SymbolInput', () => {
   });
 
   it('calls back when a stock is selected', async () => {
-    const input = await wrapper.find('.name-input');
+    const input = wrapper.find('.name-input');
     input.simulate('change', { target: { value: 'john' } });
     jest.advanceTimersByTime(700);
     await nextTick();
@@ -72,7 +72,7 @@ describe('SymbolInput', () => {
   });
 
   it('does not requery for symbols when the value is the same', async () => {
-    const input = await wrapper.find('.name-input');
+    const input = wrapper.find('.name-input');
     input.simulate('change', { target: { value: 'john' } });
     jest.advanceTimersByTime(700);
     await nextTick();
@@ -83,7 +83,7 @@ describe('SymbolInput', () => {
   });
 
   it('does not query when a query is in flight', async () => {
-    const input = await wrapper.find('.name-input');
+    const input = wrapper.find('.name-input');
     input.simulate('change', { target: { value: 'hang' } });
     jest.advanceTimersByTime(700);
     await nextTick();
@@ -95,7 +95,7 @@ describe('SymbolInput', () => {
 
   it('specifies an error on fetch hangup', async () => {
     fetch.mockAbort();
-    const input = await wrapper.find('.name-input');
+    const input = wrapper.find('.name-input');
     input.simulate('change', { target: { value: 'john' } });
     jest.advanceTimersByTime(900);
     await nextTick();
@@ -107,7 +107,7 @@ describe('SymbolInput', () => {
 
   it('specifies an error on fetch error with a message property', async () => {
     fetch.mockReject(new Error('my error message'));
-    const input = await wrapper.find('.name-input');
+    const input = wrapper.find('.name-input');
     input.simulate('change', { target: { value: 'john' } });
     jest.advanceTimersByTime(900);
     await nextTick();
@@ -119,7 +119,7 @@ describe('SymbolInput', () => {
 
   it('specifies an error on fetch error without a message property', async () => {
     fetch.mockReject('my error message');
-    const input = await wrapper.find('.name-input');
+    const input = wrapper.find('.name-input');
     input.simulate('change', { target: { value: 'john' } });
     jest.advanceTimersByTime(900);
     await nextTick();
@@ -130,7 +130,7 @@ describe('SymbolInput', () => {
   });
 
   it('specifies an error on non 200 status', async () => {
-    const input = await wrapper.find('.name-input');
+    const input = wrapper.find('.name-input');
     input.simulate('change', { target: { value: 'status500' } });
     jest.advanceTimersByTime(900);
     await nextTick();
