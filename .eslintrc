@@ -26,6 +26,7 @@
     "react/prop-types": "off"
   },
   "globals": {
+    "beforeAll": "readonly",
     "beforeEach": "readonly",
     "fetchMock": "readonly",
     "expect": "readonly",

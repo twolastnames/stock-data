@@ -1,0 +1,32 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`rendering a blank component 1`] = `
+<div
+  className="result"
+>
+  <div
+    className="company-searcher"
+  >
+    <datalist
+      id="suggestions"
+    />
+    <label
+      className="name-label"
+    >
+      Company Name
+    </label>
+    <input
+      autoComplete="off"
+      className="name-input"
+      list="suggestions"
+      onChange={[Function]}
+      type="text"
+    />
+  </div>
+  <p
+    className="message"
+  >
+    Select a Company to See a Month of Stock History
+  </p>
+</div>
+`;

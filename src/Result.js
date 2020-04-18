@@ -141,11 +141,58 @@ class Result extends React.Component {
     return wicks;
   }
 
+  getMarketDataValidityError(marketData) {
+    if (!Array.isArray(marketData)) {
+      return `expecting an array instead of ${JSON.stringify(
+        marketData,
+        null,
+        3
+      )}`;
+    }
+    let previousDate = new Date('1970-01-01');
+    for (let index = 0; index < marketData.length; index++) {
+      const record = marketData[index];
+      const errors = [];
+      const keys = ['open', 'close', 'low', 'high'];
+      keys.forEach((key) => {
+        if ('number' !== typeof record[key]) {
+          errors.push(key);
+        }
+      });
+      if (!/\d{4}-\d{2}-\d{2}/.test(record.date)) {
+        errors.push('date');
+      }
+      if (errors.length) {
+        return `invalid field(s) [${errors.join(
+          ' '
+        )}] in element positioned at ${index} in data: ${JSON.stringify(
+          marketData,
+          null,
+          2
+        )}`;
+      }
+      const newDate = new Date(record.date);
+      if (newDate < previousDate) {
+        return `dates are not in order positioned at ${index} in data: ${JSON.stringify(
+          marketData,
+          null,
+          2
+        )}`;
+      }
+      previousDate = newDate;
+    }
+  }
+
   async onSymbol(symbol, company) {
     const response = await fetch(
       `/v1/stock/${symbol}/chart/1m?period=annual&token=${Config.apiKey}`
     );
     const marketData = await response.json();
+    const message = this.getMarketDataValidityError(marketData);
+    if (message) {
+      this.setState({ message });
+      return;
+    }
     this.setState({ symbol, company, marketData });
   }
 
@@ -169,9 +216,14 @@ class Result extends React.Component {
     });
   }
 
+  onError(message) {
+    this.setState({ message });
+  }
+
   constructor(props) {
     super(props);
     this.onSymbol = this.onSymbol.bind(this);
+    this.onError = this.onError.bind(this);
     this.height = 600;
     this.width = 900;
     this.axisPadding = 0.1;
@@ -179,22 +231,28 @@ class Result extends React.Component {
       symbol: null,
       company: null,
       marketData: [],
+      message: 'Select a Company to See a Month of Stock History',
     };
   }
   render() {
     if (!this.state.marketData || !this.state.marketData.length) {
       return (
         <div className="result">
-          <SymbolInput symbolListener={this.onSymbol} />
-          <p className="message">
-            Select a Company to See a Month of Stock History
-          </p>
+          <SymbolInput
+            errorListener={this.onError}
+            symbolListener={this.onSymbol}
+          />
+          <p className="message">{this.state.message}</p>
         </div>
       );
     }
+
     return (
       <div className="result">
-        <SymbolInput symbolListener={this.onSymbol} />
+        <SymbolInput
+          errorListener={this.onError}
+          symbolListener={this.onSymbol}
+        />
         <h3 className="company-name">{this.state.company}</h3>
         <h3 className="symbol">{this.state.symbol}</h3>
         <svg height={this.height} width={this.width}>
