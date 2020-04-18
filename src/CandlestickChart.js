@@ -184,10 +184,24 @@ class CandlestickChart extends React.Component {
   }
 
   async onSymbol(symbol, company) {
-    const response = await fetch(
-      `/v1/stock/${symbol}/chart/1m?period=annual&token=${Config.apiKey}`
-    );
-    const marketData = await response.json();
+    let marketData = [];
+    try {
+      const response = await fetch(
+        `/v1/stock/${symbol}/chart/1m?period=annual&token=${Config.apiKey}`
+      );
+      if (response.status !== 200) {
+        this.setState({
+          message: `recieved status ${response.status} from server for stock symbol [${symbol}]`,
+        });
+        return;
+      }
+      marketData = await response.json();
+    } catch (error) {
+      const errorMessage = error.message ? error.message : 'no message given';
+      this.setState({
+        message: `Error fetching market data from server for sybmol ${symbol}: ${errorMessage}`,
+      });
+    }
     const message = this.getMarketDataValidityError(marketData);
     if (message) {
       this.setState({ message });

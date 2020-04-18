@@ -65,8 +65,39 @@ describe('the candlestick chart', () => {
           body: JSON.stringify(result),
           status: 200,
         };
+      } else if (stock === 'status500') {
+        return { status: 500 };
       }
     });
+  });
+
+  it('gives error message without a message on network exception', async () => {
+    fetch.mockReject('without error message');
+    await onSymbol('aSymbol', 'aCompany');
+    await nextTick();
+    const message = wrapper.find('.message').text();
+    expect(message).toEqual(
+      'Error fetching market data from server for sybmol aSymbol: no message given'
+    );
+  });
+
+  it('gives error message with a message on network exception', async () => {
+    fetch.mockReject(new Error('my error message'));
+    await onSymbol('aSymbol', 'aCompany');
+    await nextTick();
+    const message = wrapper.find('.message').text();
+    expect(message).toEqual(
+      'Error fetching market data from server for sybmol aSymbol: my error message'
+    );
+  });
+
+  it('gives error message on non 200 status', async () => {
+    await onSymbol('status500', 'badCompany');
+    await nextTick();
+    const message = wrapper.find('.message').text();
+    expect(message).toEqual(
+      'recieved status 500 from server for stock symbol [status500]'
+    );
   });
 
   it('can have good data', async () => {
