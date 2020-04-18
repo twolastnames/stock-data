@@ -21,13 +21,16 @@ app.get('/', function (req, res) {
 
 app.get('/symbol/:like', async (req, res) => {
   const like = req.params.like;
-  if (!like) {
-    return res.send(400);
-  }
   const results = await Symbols.findAll({
     where: { name: { [Op.like]: `${like}%` } },
   });
-  return res.send(results);
+  if (results.length) {
+    return res.send(results);
+  } else {
+    return res.send(404, results);
+  }
 });
 
 app.listen(process.env.PORT || 8080);
+
+module.exports = app;
