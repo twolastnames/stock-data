@@ -32,21 +32,20 @@ class SymbolInput extends React.Component {
         this.inFlight = true;
         const path = `/symbol/${this.inputText}`;
         const response = await fetch(path);
-        if (response.status != 200) {
+        if (response.status !== 200) {
           this.errorListener(
             `recieved status ${response.status} from server for path [${path}]`
           );
-          this.inFlight = false;
           return;
         }
         const similarMatches = await response.json();
         this.setState(
-          { usableSuggestions: similarMatches.map(getDisplayString) },
-          () => (this.inFlight = false)
+          { usableSuggestions: similarMatches.map(getDisplayString) }
         );
       } catch (e) {
         const message = e.message ? e.message : 'no message given';
         this.errorListener(`Error fetching symbol from server: ${message}`);
+      } finally {
         this.inFlight = false;
       }
       return;

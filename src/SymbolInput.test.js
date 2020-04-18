@@ -18,8 +18,10 @@ describe('SymbolInput', () => {
   let wrapper = null;
   let symbolListener = null;
   let errorListener = null;
+  let goodFetchCount = 0;
   beforeEach(() => {
     jest.clearAllTimers();
+    goodFetchCount = 0;
     fetchMock.mockIf(/.*/, async (req) => {
       const url = req.url;
       if (url === '/symbol/status500') {
@@ -28,6 +30,7 @@ describe('SymbolInput', () => {
         await sleep(10000);
         return {};
       } else if (url === '/symbol/john') {
+	      goodFetchCount++
         return {
           body: JSON.stringify([{ name: 'John', symbol: 'Dough' }]),
           status: 200,
@@ -64,6 +67,28 @@ describe('SymbolInput', () => {
     jest.advanceTimersByTime(700);
     await nextTick();
     expect(symbolListener).toBeCalledWith('Dough', 'John');
+  });
+
+  it('does not requery for symbols when the value is the same', async () => {
+    const input = await wrapper.find('.name-input');
+    input.simulate('change', { target: { value: 'john' } });
+    jest.advanceTimersByTime(700);
+    await nextTick();
+    input.simulate('change', { target: { value: 'john' } });
+    jest.advanceTimersByTime(700);
+    await nextTick();
+    expect(goodFetchCount).toEqual(1)
+  });
+
+  it('does not query when a query is in flight', async () => {
+    const input = await wrapper.find('.name-input');
+    input.simulate('change', { target: { value: 'hang' } });
+    jest.advanceTimersByTime(700);
+    await nextTick();
+    input.simulate('change', { target: { value: 'john' } });
+    jest.advanceTimersByTime(700);
+    await nextTick();
+    expect(goodFetchCount).toEqual(0)
   });
 
   it('specifies an error on fetch hangup', async () => {
