@@ -183,6 +183,26 @@ class CandlestickChart extends React.Component {
     }
   }
 
+  getCandles() {
+    const candleWidth = 20;
+    return this.state.marketData.map(({ open, close }, index) => {
+      const y = this.getYForPrice(Math.max(open, close));
+      const x = this.getXLocation(index) - candleWidth / 2;
+      const height = Math.abs(open - close) * this.getPixelPerDollar();
+      const className = close - open > 0 ? 'bull-candle' : 'bear-candle';
+      return (
+        <rect
+          key={index}
+          x={x}
+          y={y}
+          height={height}
+          width={candleWidth}
+          className={className}
+        />
+      );
+    });
+  }
+
   async onSymbol(symbol, company) {
     let marketData = [];
     try {
@@ -208,26 +228,6 @@ class CandlestickChart extends React.Component {
       return;
     }
     this.setState({ symbol, company, marketData });
-  }
-
-  getCandles() {
-    const candleWidth = 20;
-    return this.state.marketData.map(({ open, close }, index) => {
-      const y = this.getYForPrice(Math.max(open, close));
-      const x = this.getXLocation(index) - candleWidth / 2;
-      const height = Math.abs(open - close) * this.getPixelPerDollar();
-      const className = close - open > 0 ? 'bull-candle' : 'bear-candle';
-      return (
-        <rect
-          key={index}
-          x={x}
-          y={y}
-          height={height}
-          width={candleWidth}
-          className={className}
-        />
-      );
-    });
   }
 
   onError(message) {
