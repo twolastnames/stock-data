@@ -16,11 +16,14 @@ With the Node Version Manager in the shell path and having the project base as t
 nvm install
 nvm use
 npm install
+./create_db
 ```
+
+These commands will download necessary patches and populate the database of known symbols.
 
 ### Running Locally
 
-In order to run this application locally, populating the database is required.  This can be done by executing `./create_db` from the root project directory.  After that script is run, locally running the server for development purposes requires two shells each with a command.  One shell should run `npm start` and the other should run `node server.js`.  At that point, the front end is accessable at [http://localhost:3000](http://localhost:3000) and the backend at [http://localhost:3000](http://localhost:8080).
+Locally running the server for development purposes requires two shells each with a command.  One shell should run `npm start` and the other should run `node server.js`.  At that point, the front end is accessable at [http://localhost:3000](http://localhost:3000) and the backend at [http://localhost:3000](http://localhost:8080).
 
 ### Unit Testing
 
