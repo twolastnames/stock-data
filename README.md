@@ -28,5 +28,5 @@ The project is setup to run tests in jest watch for TDD.  If front end work is b
 
 ### Production Running
 
-To run outside of a local environment, execute `npm run build && node server.js`.  Then the application will be running on port 8080.
+To run outside of a local/development environment, execute `npm run build && node server.js`.  Then the application will be running on port 8080.
 
