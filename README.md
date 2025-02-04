@@ -1,6 +1,6 @@
 # Stock Data Candlestick Chart
 
-This was submitted as an application to a job I didn't get. Maybe I should have used some higher level libraries?
+This was submitted as an application to a job I didn't get. Maybe I should have used some higher level libraries, or done it with hooks?
 
 For a given company and symbol, this application will give the last month of daily market data in a candlestick chart.  This has been tested on Chrome version 80.
 
